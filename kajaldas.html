@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Irodai kajáldás · Intren</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #ffffff; --bg2: #f5f5f3; --bg3: #ebebea;
+  --text: #1a1a18; --text2: #6b6b67; --text3: #a0a09c;
+  --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+  --radius: 8px; --radius-lg: 12px; --amber: #BA7517;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1a; --bg2: #252523; --bg3: #2e2e2b;
+    --text: #f0f0ec; --text2: #9a9a95; --text3: #6a6a65;
+    --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.18);
+  }
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; }
+.page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+header { margin-bottom: 2rem; }
+header h1 { font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+header p { font-size: 14px; color: var(--text2); margin-top: 5px; }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 10px; margin-bottom: 1.75rem; }
+.stat-card { background: var(--bg); border-radius: var(--radius); padding: 0.85rem 1rem; border: 0.5px solid var(--border); }
+.stat-card .lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.stat-card .val { font-size: 22px; font-weight: 600; color: var(--text); }
+.tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+.tab { padding: 7px 16px; border-radius: 999px; border: 0.5px solid var(--border2); font-size: 13px; cursor: pointer; background: var(--bg); color: var(--text2); transition: all 0.15s; font-family: inherit; }
+.tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tab:hover:not(.active) { background: var(--bg2); color: var(--text); }
+.tab-right { margin-left: auto; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 14px; margin-bottom: 2rem; }
+.card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: border-color 0.15s; }
+.card:hover { border-color: var(--border2); }
+.card-head { padding: 1rem 1.25rem 0.8rem; border-bottom: 0.5px solid var(--border); }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.rname { font-size: 15px; font-weight: 600; color: var(--text); }
+.badge { font-size: 11px; padding: 3px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; font-weight: 500; }
+.b-ebéd    { background: #dcf5ec; color: #0a5c43; }
+.b-kávézó  { background: #fdf0dc; color: #7a4e0a; }
+.b-gyors   { background: #fde8e8; color: #8c2020; }
+.b-ázsiai  { background: #fce8f2; color: #7a1f50; }
+.b-bár     { background: #ededfe; color: #3a2fa0; }
+@media (prefers-color-scheme: dark) {
+  .b-ebéd    { background: #0a3d2a; color: #5ddba8; }
+  .b-kávézó  { background: #3d2a06; color: #f0a830; }
+  .b-gyors   { background: #3d1010; color: #f08080; }
+  .b-ázsiai  { background: #3a1030; color: #e87ac0; }
+  .b-bár     { background: #1e1a5e; color: #9b97f5; }
+}
+.card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text3); }
+.card-meta .avg { margin-left: auto; font-size: 13px; color: var(--text2); }
+.card-body { padding: 1rem 1.25rem; }
+.rev-item { padding: 0.6rem 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+.rev-item:last-child { border-bottom: none; }
+.rev-top { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+.avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+.rev-name { font-weight: 600; font-size: 13px; }
+.rev-stars { color: var(--amber); font-size: 12px; }
+.rev-text { color: var(--text2); padding-left: 34px; line-height: 1.5; margin-top: 2px; }
+.no-rev { font-size: 13px; color: var(--text3); text-align: center; padding: 0.75rem 0; }
+.btn-write { width: 100%; padding: 8px; font-size: 13px; border: 1px dashed var(--border2); border-radius: var(--radius); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 0.5rem; }
+.btn-write:hover { background: var(--bg2); color: var(--text); border-style: solid; }
+.form-wrap { margin-top: 0.75rem; }
+.star-row { display: flex; gap: 6px; margin-bottom: 10px; cursor: pointer; }
+.star-row span { font-size: 26px; color: var(--border2); transition: color 0.1s; user-select: none; }
+.star-row span.on { color: var(--amber); }
+input.fi, textarea.fi { width: 100%; font-size: 13px; padding: 8px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text); font-family: inherit; margin-bottom: 8px; outline: none; transition: border-color 0.15s; }
+input.fi:focus, textarea.fi:focus { border-color: var(--text2); }
+textarea.fi { resize: none; }
+.form-btns { display: flex; gap: 8px; }
+.btn-save { flex: 1; padding: 8px; font-size: 13px; border-radius: var(--radius); background: var(--text); color: var(--bg); border: none; cursor: pointer; font-family: inherit; transition: opacity 0.15s; font-weight: 500; }
+.btn-save:hover { opacity: 0.82; }
+.btn-cancel { padding: 8px 14px; font-size: 13px; border-radius: var(--radius); background: transparent; color: var(--text2); border: 0.5px solid var(--border2); cursor: pointer; font-family: inherit; }
+.btn-cancel:hover { background: var(--bg2); }
+.add-section { margin-top: 0.5rem; }
+.btn-add { padding: 8px 20px; font-size: 13px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text2); cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s; }
+.btn-add:hover { background: var(--bg2); color: var(--text); }
+.add-form { background: var(--bg2); border-radius: var(--radius-lg); padding: 1.25rem; border: 0.5px solid var(--border); margin-top: 1rem; display: none; }
+.add-form h3 { font-size: 14px; font-weight: 600; margin-bottom: 1rem; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.frow input, .frow select { font-size: 13px; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); font-family: inherit; }
+.empty { grid-column: 1/-1; text-align: center; padding: 2.5rem; color: var(--text3); font-size: 14px; }
+.toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 100; }
+.toast.show { opacity: 1; }
+.loading { text-align: center; padding: 3rem; color: var(--text3); font-size: 14px; grid-column: 1/-1; }
+footer { text-align: center; font-size: 12px; color: var(--text3); padding: 2rem 0 1rem; border-top: 0.5px solid var(--border); margin-top: 1rem; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1><i class="ti ti-map-pin"></i> Irodai kajáldás</h1>
+    <p>Intren környéke &middot; Óbuda, III. kerület &middot; Kolosy tér és Bécsi út</p>
+  </header>
+
+  <div class="stats-row" id="stats"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="filter(this,'mind')">Mind</button>
+    <button class="tab" onclick="filter(this,'ebéd')">Ebéd</button>
+    <button class="tab" onclick="filter(this,'kávézó')">Kávézó</button>
+    <button class="tab" onclick="filter(this,'gyors')">Gyors</button>
+    <button class="tab" onclick="filter(this,'ázsiai')">Ázsiai</button>
+    <button class="tab" onclick="filter(this,'bár')">Bár / Est</button>
+    <button class="tab tab-right" onclick="filter(this,'top')"><i class="ti ti-star"></i> Top értékeltek</button>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="loading"><i class="ti ti-loader" style="font-size:24px;display:block;margin-bottom:8px;"></i>Adatok betöltése...</div>
+  </div>
+
+  <div class="add-section">
+    <button class="btn-add" onclick="toggleAdd()"><i class="ti ti-plus"></i> Új étterem hozzáadása</button>
+    <div class="add-form" id="add-form">
+      <h3>Étterem hozzáadása</h3>
+      <div class="frow">
+        <input type="text" id="an" placeholder="Étterem neve" />
+        <input type="text" id="ad" placeholder="Távolság (pl. 5 perc)" />
+      </div>
+      <div class="frow">
+        <select id="at">
+          <option value="ebéd">Ebéd</option>
+          <option value="kávézó">Kávézó</option>
+          <option value="gyors">Gyors</option>
+          <option value="ázsiai">Ázsiai</option>
+          <option value="bár">Bár / Est</option>
+        </select>
+        <input type="text" id="as" placeholder="Pl. pizza, ramen, magyaros..." />
+      </div>
+      <div class="form-btns" style="margin-top:4px;">
+        <button class="btn-save" onclick="addRest()">Hozzáadás</button>
+        <button class="btn-cancel" onclick="toggleAdd()">Mégse</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Intren belső használatra &middot; Megosztott adatok: JSONBin</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API_KEY = '$2a$10$3nKz46c3y0VHU7hMmEDJ6Oe5se1TaDP/nYzmth4XiUMAP8.x0fzMS';
+const BIN_KEY = 'kajaldas_bin_id';
+const HEADERS = {
+  'Content-Type': 'application/json',
+  'X-Master-Key': API_KEY,
+  'X-Bin-Versioning': 'false'
+};
+
+const DEFAULT_DATA = {
+  nextId: 18,
+  restaurants: [
+    {id:1,  name:'Bamba Marha',          type:'gyors',  dist:'2 perc', spec:'burger, gourmet',             reviews:[]},
+    {id:2,  name:'Padthai Wokbar',        type:'ázsiai', dist:'2 perc', spec:'thai, wok, ázsiai fúzió',    reviews:[]},
+    {id:3,  name:'Hummus Bar',            type:'ebéd',   dist:'3 perc', spec:'falafel, libanoni, vegán',   reviews:[]},
+    {id:4,  name:'Pastrami',              type:'ebéd',   dist:'4 perc', spec:'szendvics, magyaros-nemz.',  reviews:[]},
+    {id:5,  name:'A Rántott Húsos',       type:'ebéd',   dist:'4 perc', spec:'rántott hús, klasszikus',    reviews:[]},
+    {id:6,  name:"D'Al Michele",          type:'gyors',  dist:'5 perc', spec:'al taglio pizza, olasz',     reviews:[]},
+    {id:7,  name:'Vapiano',               type:'ebéd',   dist:'2 perc', spec:'pasta, pizza, olasz lánc',   reviews:[]},
+    {id:8,  name:'Galagonya kifőzde',     type:'ebéd',   dist:'6 perc', spec:'magyaros, napi menü',        reviews:[]},
+    {id:9,  name:'Nefelejcs kisvendéglő', type:'ebéd',   dist:'6 perc', spec:'házias, magyaros',           reviews:[]},
+    {id:10, name:'Bécsi Bisztro',         type:'ebéd',   dist:'5 perc', spec:'gyors ebéd, méretes adagok', reviews:[]},
+    {id:11, name:'Daisuke',               type:'kávézó', dist:'4 perc', spec:'specialty kávé, bagel',      reviews:[]},
+    {id:12, name:'Pogi van Pékség',       type:'kávézó', dist:'5 perc', spec:'kávé, szendvics, flódni',    reviews:[]},
+    {id:13, name:'Bonjour Fromage',       type:'kávézó', dist:'3 perc', spec:'sajtos szendvics, francia',  reviews:[]},
+    {id:14, name:'Sushi Sei',             type:'ázsiai', dist:'7 perc', spec:'sushi, japán',               reviews:[]},
+    {id:15, name:'Pódium Bistro',         type:'bár',    dist:'5 perc', spec:'bisztró, ebéd, randevú',     reviews:[]},
+    {id:16, name:'Zöld Kapu Vendéglő',   type:'ebéd',   dist:'8 perc', spec:'magyaros, kerthelység',      reviews:[]},
+    {id:17, name:'Nobility Sushi Bar',    type:'ázsiai', dist:'6 perc', spec:'sushi, japán, menü',         reviews:[]}
+  ]
+};
+
+const COLORS = ['#9FE1CB','#B5D4F4','#F4C0D1','#CECBF6','#FAC775','#C0DD97','#F5C4B3','#fdc5a0'];
+let appData = null;
+let binId = localStorage.getItem(BIN_KEY) || null;
+let activeFilter = 'mind';
+let openForms = {};
+let saving = false;
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+async function loadData() {
+  if (binId) {
+    try {
+      const r = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const j = await r.json();
+      if (j.record) {
+        appData = j.record;
+        render();
+        return;
+      }
+    } catch(e) {}
+  }
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: Object.assign({}, HEADERS, { 'X-Bin-Name': 'kajaldas' }),
+      body: JSON.stringify(DEFAULT_DATA)
+    });
+    const j = await r.json();
+    binId = j.metadata.id;
+    localStorage.setItem(BIN_KEY, binId);
+    appData = DEFAULT_DATA;
+    render();
+  } catch(e) {
+    document.getElementById('grid').innerHTML = '<div class="loading">Nem sikerült csatlakozni. Ellenőrizd az API kulcsot.</div>';
+  }
+}
+
+async function saveData() {
+  if (saving || !binId) return;
+  saving = true;
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/' + binId, {
+      method: 'PUT',
+      headers: HEADERS,
+      body: JSON.stringify(appData)
+    });
+  } catch(e) {
+    toast('Mentés sikertelen');
+  }
+  saving = false;
+}
+
+function ini(n) { return n.replace(/['"]/g,'').split(/\s+/).map(w => w[0]||'').join('').toUpperCase().slice(0,2); }
+function col(i) { return COLORS[i % COLORS.length]; }
+function avg(r) { if(!r.length) return null; return (r.reduce((s,x) => s+x.stars, 0)/r.length).toFixed(1); }
+function starsHtml(n, sz) {
+  let h = ''; const f = Math.round(n);
+  for(let i=1;i<=5;i++) h += '<span style="color:' + (i<=f?'#BA7517':'#ccc') + ';font-size:' + (sz||14) + 'px;">&#9733;</span>';
+  return h;
+}
+
+const BADGE = {ebéd:'b-ebéd',kávézó:'b-kávézó',gyors:'b-gyors',ázsiai:'b-ázsiai',bár:'b-bár'};
+const LABEL = {ebéd:'Ebéd',kávézó:'Kávézó',gyors:'Gyors',ázsiai:'Ázsiai',bár:'Bár'};
+
+function render() { renderStats(); renderGrid(); }
+
+function renderStats() {
+  const total = appData.restaurants.length;
+  const allR = appData.restaurants.flatMap(r => r.reviews);
+  const rated = appData.restaurants.filter(r => r.reviews.length > 0);
+  const oa = rated.length ? (rated.reduce((s,r) => s + (parseFloat(avg(r.reviews))||0), 0) / rated.length).toFixed(1) : '—';
+  const top = [...rated].sort((a,b) => (parseFloat(avg(b.reviews))||0) - (parseFloat(avg(a.reviews))||0))[0];
+  document.getElementById('stats').innerHTML =
+    '<div class="stat-card"><div class="lbl">Éttermek</div><div class="val">' + total + '</div></div>' +
+    '<div class="stat-card"><div class="lbl">Összes vélemény</div><div class="val">' + allR.length + '</div></div>' +
+    '<div class="stat-card"><div class="lbl">Átlag értékelés</div><div class="val">' + (oa !== '—' ? oa + ' ★' : oa) + '</div></div>' +
+    '<div class="stat-card"><div class="lbl">Legjobb hely</div><div class="val" style="font-size:14px;padding-top:5px;">' + (top ? top.name : '—') + '</div></div>';
+}
+
+function getFiltered() {
+  let list = [...appData.restaurants];
+  if(activeFilter === 'top') return list.filter(r => r.reviews.length > 0).sort((a,b) => (parseFloat(avg(b.reviews))||0) - (parseFloat(avg(a.reviews))||0));
+  if(activeFilter !== 'mind') return list.filter(r => r.type === activeFilter);
+  return list;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const list = getFiltered();
+  if(!list.length) { grid.innerHTML = '<div class="empty">Nincs találat</div>'; return; }
+  grid.innerHTML = list.map(r => {
+    const a = avg(r.reviews);
+    const revHtml = r.reviews.length
+      ? r.reviews.map((rv,i) =>
+          '<div class="rev-item">' +
+          '<div class="rev-top">' +
+          '<div class="avatar" style="background:' + col(i) + ';color:#222;">' + ini(rv.name) + '</div>' +
+          '<span class="rev-name">' + rv.name + '</span>' +
+          '<span class="rev-stars">' + '★'.repeat(rv.stars) + '☆'.repeat(5-rv.stars) + '</span>' +
+          '</div>' +
+          (rv.text ? '<div class="rev-text">' + rv.text + '</div>' : '') +
+          '</div>').join('')
+      : '<div class="no-rev">Még nincs vélemény</div>';
+    const formHtml = openForms[r.id]
+      ? '<div class="form-wrap">' +
+        '<div class="star-row" id="sp' + r.id + '">' +
+        '<span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>' +
+        '</div>' +
+        '<input class="fi" id="rn' + r.id + '" placeholder="Neved" />' +
+        '<textarea class="fi" id="rt' + r.id + '" rows="2" placeholder="Véleményed (opcionális)..."></textarea>' +
+        '<div class="form-btns">' +
+        '<button class="btn-save" onclick="submitRev(' + r.id + ')">Mentés</button>' +
+        '<button class="btn-cancel" onclick="closeForm(' + r.id + ')">Mégse</button>' +
+        '</div></div>'
+      : '<button class="btn-write" onclick="openForm(' + r.id + ')"><i class="ti ti-pencil"></i> Vélemény írása</button>';
+    return '<div class="card">' +
+      '<div class="card-head">' +
+      '<div class="card-top"><span class="rname">' + r.name + '</span>' +
+      '<span class="badge ' + (BADGE[r.type]||'b-ebéd') + '">' + (LABEL[r.type]||r.type) + '</span></div>' +
+      '<div class="card-meta">' +
+      '<i class="ti ti-walk" style="font-size:13px;"></i> ' + r.dist +
+      ' <span style="opacity:.4;">·</span> <span>' + r.spec + '</span>' +
+      (a ? '<span class="avg">' + a + ' ' + starsHtml(parseFloat(a),12) + '</span>' : '') +
+      '</div></div>' +
+      '<div class="card-body"><div>' + revHtml + '</div>' + formHtml + '</div>' +
+      '</div>';
+  }).join('');
+
+  list.forEach(r => {
+    if(openForms[r.id]) {
+      const sp = document.getElementById('sp' + r.id);
+      if(sp) {
+        sp.onclick = function(e) {
+          const s = e.target.closest('[data-v]'); if(!s) return;
+          openForms[r.id].stars = parseInt(s.dataset.v);
+          sp.querySelectorAll('span').forEach(x => x.classList.toggle('on', parseInt(x.dataset.v) <= openForms[r.id].stars));
+        };
+        if(openForms[r.id].stars) {
+          sp.querySelectorAll('span').forEach(x => x.classList.toggle('on', parseInt(x.dataset.v) <= openForms[r.id].stars));
+        }
+      }
+    }
+  });
+}
+
+function filter(btn, type) {
+  activeFilter = type;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function openForm(id) { openForms[id] = {stars:0}; renderGrid(); }
+function closeForm(id) { delete openForms[id]; renderGrid(); }
+
+async function submitRev(id) {
+  const s = openForms[id] ? openForms[id].stars : 0;
+  const name = document.getElementById('rn' + id) ? document.getElementById('rn' + id).value.trim() : '';
+  const text = document.getElementById('rt' + id) ? document.getElementById('rt' + id).value.trim() : '';
+  if(!s) { alert('Adj csillagos értékelést!'); return; }
+  if(!name) { alert('Add meg a neved!'); return; }
+  const rest = appData.restaurants.find(r => r.id === id);
+  if(rest) rest.reviews.push({name: name, stars: s, text: text});
+  delete openForms[id];
+  renderGrid(); renderStats();
+  toast('Vélemény mentve ✓');
+  await saveData();
+}
+
+function toggleAdd() {
+  const f = document.getElementById('add-form');
+  f.style.display = (f.style.display === 'block') ? 'none' : 'block';
+}
+
+async function addRest() {
+  const name = document.getElementById('an').value.trim();
+  if(!name) { alert('Add meg az étterem nevét!'); return; }
+  appData.restaurants.push({
+    id: appData.nextId++,
+    name: name,
+    dist: document.getElementById('ad').value.trim() || '? perc',
+    type: document.getElementById('at').value,
+    spec: document.getElementById('as').value.trim() || '—',
+    reviews: []
+  });
+  document.getElementById('an').value = '';
+  document.getElementById('ad').value = '';
+  document.getElementById('as').value = '';
+  toggleAdd();
+  render();
+  toast('Étterem hozzáadva ✓');
+  await saveData();
+}
+
+loadData();
+</script>
+</body>
+</html>
